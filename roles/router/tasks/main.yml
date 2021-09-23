@@ -1,0 +1,39 @@
+---
+- name: Copy configs
+  copy: 
+    src: config
+    dest: /srv/router
+
+- name: Copy docker-compose
+  copy: 
+    src: docker-compose.yml
+    dest: /srv/router
+
+- name: "Create a network"
+  docker_network:
+    name: "internet"
+
+- name: Edit Mail for certificate
+  ansible.builtin.lineinfile:
+    path: /srv/router/config/static.yml
+    regexp: '^      email: '
+    line: '      email: {{acme_mail}}'
+
+- name: Creates directory
+  file:
+    path: /mnt/data/router/acme
+    state: directory
+
+- name: Create
+  ansible.builtin.file:
+    path: /mnt/data/router/acme/acme.json
+    mode: '0600'
+    state: touch
+
+- name: Create and start Router
+  community.docker.docker_compose:
+    project_src: /srv/router
+    remove_orphans: true
+  register: output
+- debug:
+    var: output.changed

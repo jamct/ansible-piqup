@@ -1,0 +1,29 @@
+---
+- hosts: production
+  become: true
+  become_user: root
+  tasks:
+
+  - name: update apt cache
+    apt:
+      update_cache: yes
+
+  - name: upgrade packages
+    apt:
+      upgrade: dist
+
+  - name: check if reboot is required
+    register: reboot_required_file
+    stat:
+      path: /var/run/reboot-required get_md5=no
+
+  - name: restart machine
+    reboot:
+      msg: "Reboot initiated by Ansible"
+    when: reboot_required_file.stat.exists == true
+
+  - name: waiting for machine to come back
+    wait_for_connection:
+      delay: 10
+      connect_timeout: 300
+    when: reboot_required_file.stat.exists == true

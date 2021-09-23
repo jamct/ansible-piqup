@@ -1,0 +1,20 @@
+---
+server_hostname: dockerhost1
+server_location: fsn1
+server_subdomains:
+ - dockerhost1
+ - app
+ - demo
+
+nginx_address: app.piqup.de
+
+volume_size: 20
+
+docker_compose_version: 1.28.4
+
+acme_mail: kontakt@piqup.de
+cloudflare_domain: piqup.de
+
+# saving secrets here is not best practice! Use Ansible Vault instead!
+hetzner_secret: "<secret token>"
+cloudflare_secret: "<secret token>"

@@ -1,0 +1,20 @@
+---
+- name: Order servers
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+  - vars/default.yml
+  roles:
+   - hetznerserver
+
+- name: Configure Server (volume, docker, router, nginx)
+  hosts: production
+  become: true
+  gather_facts: false
+  vars_files:
+   - vars/default.yml
+  roles:
+   - volume
+   - dockerhost
+   - router
+   - nginxdemo

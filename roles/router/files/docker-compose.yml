@@ -1,0 +1,22 @@
+version: "3.7"
+services:
+  traefik:
+    image: traefik:v2.4
+    command: --providers.docker
+    restart: always
+    ports:
+     - 80:80
+     - 443:443
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock:rw
+     - ./config/static.yml:/etc/traefik/traefik.yml
+     - ./config/dynamic.yml:/etc/traefik/dynamic/dynamic.yml
+     - /mnt/data/router/acme/acme.json:/etc/traefik/acme/acme.json
+    networks:
+     - internet
+    labels:
+      - "traefik.docker.network=internet"
+networks:
+  internet:
+    external: true
+    name: internet

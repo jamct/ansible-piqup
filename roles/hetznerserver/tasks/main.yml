@@ -1,0 +1,46 @@
+---
+- name: create the server at Hetzner
+  hetzner.hcloud.hcloud_server:
+    name: "{{server_hostname}}"
+    server_type: cx11
+    location: "{{server_location}}"
+    image: ubuntu-20.04
+    ssh_keys:
+    - ansible
+    state: present
+    api_token: "{{hetzner_secret}}"
+  register: server
+
+- name: create and mount a volume
+  hcloud_volume:
+    name: "{{server_hostname}}-volume"
+    server: "{{server_hostname}}"
+    format: ext4
+    size: "{{volume_size}}"
+    api_token: "{{hetzner_secret}}"
+    state: present
+  register: volume
+
+- set_fact: volume_path="{{volume.hcloud_volume.linux_device}}"
+
+- name: print status
+  debug:
+    msg:
+     - "created {{ server.hcloud_server.name }}"
+     - "id: {{ server.hcloud_server.id }}"
+     - "type:        {{ server.hcloud_server.server_type }}"
+     - "status:      {{ server.hcloud_server.status }}"
+     - "datacenter:  {{ server.hcloud_server.datacenter }}"
+     - "IPv4:        {{ server.hcloud_server.ipv4_address}}"
+     - "IPv6:        {{ server.hcloud_server.ipv6 }}"
+
+- name: create DNS A records
+  community.general.cloudflare_dns:
+    zone: "{{ cloudflare_domain }}"
+    record: "{{ item }}"
+    type: A
+    value: "{{ server.hcloud_server.ipv4_address }}"
+    solo: true
+    proxied: no
+    api_token: "{{cloudflare_secret}}"
+  loop: "{{ server_subdomains }}"

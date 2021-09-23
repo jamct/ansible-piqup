@@ -1,0 +1,7 @@
+---
+- name: Mount
+  mount:
+    path: /mnt/data
+    src: "{{hostvars['localhost']['volume_path']}}"
+    fstype: ext4
+    state: mounted
