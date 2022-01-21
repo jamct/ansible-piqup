@@ -2,7 +2,7 @@
 - name: copy docker-compose for nginx
   copy: 
     src: docker-compose.yml
-    dest: /srv/nginxdemo
+    dest: /srv/nginxdemo/
 
 - name: create and start nginxdemo
   community.docker.docker_compose:
@@ -10,6 +10,6 @@
     remove_orphans: true
   register: output
   environment:
-    NGINX_ADDRESS: "{{nginx_url}}"
+    NGINX_ADDRESS: "{{nginx_address}}"
 - debug:
     var: output.changed
