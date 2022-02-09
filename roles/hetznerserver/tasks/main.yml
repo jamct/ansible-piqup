@@ -12,7 +12,7 @@
   register: server
 
 - name: create and mount a volume
-  hcloud_volume:
+  hetzner.hcloud.hcloud_volume:
     name: "{{server_hostname}}-volume"
     server: "{{server_hostname}}"
     format: ext4
